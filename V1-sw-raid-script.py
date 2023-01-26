@@ -32,7 +32,7 @@ if __name__ == "__main__":
     os.system(f"sudo mount /dev/md0 /{mount_point}")
     os.system("sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf")
     os.system("sudo update-initramfs -u")
-    os.system(f"echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab)
+    os.system(f"echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab)")
 
     # Configured storage *amount*
-    os.system(f''df -h /{mount_point})
+    os.system(f"df -h /{mount_point}")
