@@ -28,12 +28,6 @@ progress_bar() {
         sudo wipefs -af "$disk"
     done
 
-    # Create RAID array
-    if [ "$(echo "$disks" | wc -l)" -lt 2 ]; then
-        echo "Not enough disks detected for RAID. Exiting."
-        exit 1
-    fi
-
     raid_level=1  # Set the desired RAID level
 
     sudo mdadm --create --verbose /dev/md0 --level="$raid_level" --raid-devices=$(echo "$disks" | wc -l) $disks
