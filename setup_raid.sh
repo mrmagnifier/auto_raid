@@ -38,7 +38,7 @@ sudo update-initramfs -u
 echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab
 
 # Wipe History
-sudo history -c
+history -c
 
 # Output of home
 sudo df -h /home
