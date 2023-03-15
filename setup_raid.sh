@@ -7,6 +7,11 @@ sudo apt-get install -y mdadm
 # Auto-detect available disks excluding /dev/sda
 disks=$(lsblk -d -n -o NAME | awk '{ print "/dev/"$1 }' | grep -v "md" | grep -v "sda")
 
+# Wipe all detected disks except /dev/sda
+for disk in $disks; do
+    sudo dd if=/dev/zero of="$disk" bs=1M count=100
+done
+
 # Create RAID array
 if [ "$(echo "$disks" | wc -l)" -lt 2 ]; then
     echo "Not enough disks detected for RAID. Exiting."
