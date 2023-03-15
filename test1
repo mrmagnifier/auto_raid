@@ -58,10 +58,6 @@ update_progress() {
     # Add the RAID array to /etc/fstab
     echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab >/dev/null 2>&1
     update_progress
-
-    # Output of /home
-    sudo df -h /home >/dev/null 2>&1
-    update_progress
 )
 
 # Notify when the script is finished
