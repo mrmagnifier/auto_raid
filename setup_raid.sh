@@ -28,6 +28,12 @@ progress_bar() {
         sudo wipefs -af "$disk"
     done
 
+    # Create RAID array
+    if [ "$(echo "$disks" | wc -l)" -lt 2 ]; then
+        echo "Not enough disks detected for RAID. Exiting."
+        exit 1
+    fi
+
     raid_level=1  # Set the desired RAID level
 
     sudo mdadm --create --verbose /dev/md0 --level="$raid_level" --raid-devices=$(echo "$disks" | wc -l) $disks
@@ -49,11 +55,15 @@ progress_bar() {
 
     # Wipe History
     sudo history -c
-) &
+
+    # Print completion message and output of df -h /home
+    echo "The Script is finished" >&3
+    df -h /home >&3
+) 3>output.log &
 
 # Display progress bar while the script is running in the background
 progress_bar 5
 
-# Print completion message and output of df -h /home
-echo "The Script is finished"
-df -h /home
+# Print the output stored in output.log
+cat output.log
+rm output.log
