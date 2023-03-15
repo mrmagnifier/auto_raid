@@ -37,5 +37,9 @@ sudo update-initramfs -u
 # Add the RAID array to /etc/fstab
 echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab
 
+# Wipe History
+history -c
+history -w
+
 # Output of home
 sudo df -h /home
