@@ -4,7 +4,7 @@
 sudo apt-get install -y pv
 
 # Calculate approximate progress steps
-progress_steps=10
+progress_steps=4
 
 # Run the script in the background
 {
