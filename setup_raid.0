@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Calculate approximate progress steps
-total_steps=8
+total_steps=10
 current_step=0
 
 # Function to update and display the progress percentage and current task
@@ -22,6 +22,19 @@ update_progress() {
     # Auto-detect available disks excluding /dev/sda
     update_progress "Auto-detecting available disks"
     disks=$(lsblk -d -n -o NAME | awk '{ print "/dev/"$1 }' | grep -v "md" | grep -v "sda")
+
+    # Check for existing md devices
+    update_progress "Checking for existing md devices"
+    existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
+
+    # Unmount and stop existing md devices
+    if [ -n "$existing_md" ]; then
+        update_progress "Unmounting and stopping existing md devices"
+        for md_device in $existing_md; do
+            sudo umount "/dev/$md_device" >/dev/null 2>&1
+            sudo mdadm --stop "/dev/$md_device" >/dev/null 2>&1
+        done
+    fi
 
     # Wipe all detected disks except /dev/sda using wipefs
     update_progress "Wiping detected disks"
@@ -65,3 +78,4 @@ update_progress() {
 # Notify when the script is finished
 echo -e "\nThe script is finished."
 sudo df -h /home
+``
