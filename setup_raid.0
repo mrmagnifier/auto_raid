@@ -45,7 +45,7 @@ update_progress() {
     raid_level=0  # Set the desired RAID level
     disk_count=$(echo "$disks" | wc -l)
 
-     # Check if there are enough disks for the desired RAID level
+    # Check if there are enough disks for the desired RAID level
     update_progress "Checking if there are enough disks for the desired RAID level"
     if [ "$raid_level" -eq 0 ] && [ "$disk_count" -lt 2 ]; then
         echo "Not enough disks detected for RAID 1. Exiting."
@@ -87,6 +87,7 @@ update_progress() {
     # Add the RAID array to /etc/fstab
     update_progress "Adding RAID array to /etc/fstab"
     echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab >/dev/null 2>&1
+
 )
 
 # Notify when the script is finished
