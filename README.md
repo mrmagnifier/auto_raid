@@ -1,8 +1,8 @@
-`v1`
+`V1`
 
-Automatic SW Raid
+Automatic shell script: automatic SW Raid. 
 
-Automatic shell script: automatic SW Raid. Use command:
+Use command:
 
 `wget -O - https://raw.githubusercontent.com/mrmagnifier/auto_raid/main/setup_raid.0 | bash`
 
