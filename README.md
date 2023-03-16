@@ -2,7 +2,7 @@
 
 Automatic SW Raid
 
-A tool for everyone to use: automatic SW Raid. You can make it by this command:
+Automatic shell script: automatic SW Raid. Use command:
 
 `wget -O - https://raw.githubusercontent.com/mrmagnifier/auto_raid/main/setup_raid.0 | bash`
 
