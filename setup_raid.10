@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# Calculate approximate progress steps
+total_steps=11
+current_step=0
+
+# Function to update and display the progress percentage and current task
+update_progress() {
+    task=$1
+    current_step=$((current_step + 1))
+    progress_percentage=$((current_step * 100 / total_steps))
+    echo -e "Progress: $progress_percentage%\\rTask: $task"
+}
+
+# Run the script in a subshell
+(
+    # Update package list and install mdadm
+    update_progress "Updating package list and installing mdadm"
+    sudo apt-get update >/dev/null 2>&1
+    sudo apt-get install -y mdadm >/dev/null 2>&1
+
+    # Auto-detect available disks excluding /dev/sda
+    update_progress "Auto-detecting available disks"
+    disks=$(lsblk -d -n -o NAME | awk '{ print "/dev/"$1 }' | grep -v "md" | grep -v "sda")
+
+    # Check for existing md devices
+    update_progress "Checking for existing md devices"
+    existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
+
+    # Unmount and stop existing md devices
+    if [ -n "$existing_md" ]; then
+        update_progress "Unmounting and stopping existing md devices"
+        for md_device in $existing_md; do
+            sudo umount "/dev/$md_device" >/dev/null 2>&1
+            sudo mdadm --stop "/dev/$md_device" >/dev/null 2>&1
+        done
+    fi
+
+    # Wipe all detected disks except /dev/sda using wipefs
+    update_progress "Wiping detected disks"
+    for disk in $disks; do
+        sudo wipefs -af "$disk" >/dev/null 2>&1
+    done
+
+    raid_level=10  # Set the desired RAID level
+    disk_count=$(echo "$disks" | wc -l)
+
+    # Check if there are enough disks for the desired RAID level
+    update_progress "Checking if there are enough disks for the desired RAID level"
+    if [ "$raid_level" -eq 0 ] && [ "$disk_count" -lt 2 ]; then
+        echo "Not enough disks detected for RAID 1. Exiting."
+        exit 1
+    if [ "$raid_level" -eq 1 ] && [ "$disk_count" -lt 2 ]; then
+        echo "Not enough disks detected for RAID 1. Exiting."
+        exit 1
+    elif [ "$raid_level" -eq 5 ] && [ "$disk_count" -lt 3 ]; then
+        echo "Not enough disks detected for RAID 5. Exiting."
+        exit 1
+    elif [ "$raid_level" -eq 6 ] && [ "$disk_count" -lt 4 ]; then
+        echo "Not enough disks detected for RAID 6. Exiting."
+        exit 1
+    elif [ "$raid_level" -eq 10 ] && [ "$disk_count" -lt 4 ]; then
+        echo "Not enough disks detected for RAID 10. Exiting."
+        exit 1
+    fi
+
+    # Create RAID array
+    update_progress "Creating RAID array"
+    sudo mdadm --create --verbose /dev/md0 --level="$raid_level" --raid-devices=$disk_count $disks >/dev/null 2>&1
+
+    # Format the RAID array
+    update_progress "Formatting the RAID array"
+    sudo mkfs.ext4 -F /dev/md0 >/dev/null 2>&1
+
+    # Mount the RAID array
+    update_progress "Mounting the RAID array"
+    sudo mount /dev/md0 /home >/dev/null 2>&1
+
+    # Update mdadm.conf
+    update_progress "Updating mdadm.conf"
+    sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf >/dev/null 2>&1
+
+    # Update initramfs
+    update_progress "Updating initramfs"
+    sudo update-initramfs -u >/dev/null 2>&1
+
+    # Add the RAID array to /etc/fstab
+    update_progress "Adding RAID array to /etc/fstab"
+    echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab >/dev/null 2>&1
+)
+
+# Notify when the script is finished
+echo -e "\nThe script is finished."
+sudo df -h /home
+``
