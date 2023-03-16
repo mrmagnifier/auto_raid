@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Calculate approximate progress steps
-total_steps=10
+total_steps=11
 current_step=0
 
 # Function to update and display the progress percentage and current task
@@ -42,17 +42,31 @@ update_progress() {
         sudo wipefs -af "$disk" >/dev/null 2>&1
     done
 
-    # Check disk count
-    if [ "$(echo "$disks" | wc -l)" -lt 2 ]; then
-        echo "Not enough disks detected for RAID. Exiting."
+    raid_level=0  # Set the desired RAID level
+    disk_count=$(echo "$disks" | wc -l)
+
+    # Check if there are enough disks for the desired RAID level
+    update_progress "Checking if there are enough disks for the desired RAID level"
+    if [ "$raid_level" -eq 0 ] && [ "$disk_count" -lt 2 ]; then
+        echo "Not enough disks detected for RAID 1. Exiting."
+        exit 1
+    if [ "$raid_level" -eq 1 ] && [ "$disk_count" -lt 2 ]; then
+        echo "Not enough disks detected for RAID 1. Exiting."
+        exit 1
+    elif [ "$raid_level" -eq 5 ] && [ "$disk_count" -lt 3 ]; then
+        echo "Not enough disks detected for RAID 5. Exiting."
+        exit 1
+    elif [ "$raid_level" -eq 6 ] && [ "$disk_count" -lt 4 ]; then
+        echo "Not enough disks detected for RAID 6. Exiting."
+        exit 1
+    elif [ "$raid_level" -eq 10 ] && [ "$disk_count" -lt 4 ]; then
+        echo "Not enough disks detected for RAID 10. Exiting."
         exit 1
     fi
 
-    raid_level=0  # Set the desired RAID level
-
     # Create RAID array
     update_progress "Creating RAID array"
-    sudo mdadm --create --verbose /dev/md0 --level="$raid_level" --raid-devices=$(echo "$disks" | wc -l) $disks >/dev/null 2>&1
+    sudo mdadm --create --verbose /dev/md0 --level="$raid_level" --raid-devices=$disk_count $disks >/dev/null 2>&1
 
     # Format the RAID array
     update_progress "Formatting the RAID array"
