@@ -27,8 +27,8 @@ update_progress() {
     update_progress "Checking for existing md devices"
     existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
 
-    # Check if there are any ARRAY entries in mdadm.conf
-    update_progress "Check if there are any ARRAY entries in mdadm.conf"
+    # Checking if there are any ARRAY entries in mdadm.conf
+    update_progress "Checking if there are any ARRAY entries in mdadm.conf"
     if grep -q "^ARRAY" /etc/mdadm/mdadm.conf; then
 
     # Remove existing ARRAY entries from mdadm.conf
@@ -83,15 +83,15 @@ update_progress() {
     fi
 
     # Create RAID array
-    update_progress "Creating RAID array"
+    update_progress "Creating RAID ARRAY"
     sudo mdadm --create --verbose /dev/md0 --level="$raid_level" --raid-devices=$disk_count $disks >/dev/null 2>&1
 
     # Format the RAID array
-    update_progress "Formatting the RAID array"
+    update_progress "Formatting the RAID ARRAY"
     sudo mkfs.ext4 -F /dev/md0 >/dev/null 2>&1
 
     # Mount the RAID array
-    update_progress "Mounting the RAID array"
+    update_progress "Mounting the RAID ARRAY"
     sudo mount /dev/md0 /home >/dev/null 2>&1
 
     # Update mdadm.conf
@@ -103,7 +103,7 @@ update_progress() {
     sudo update-initramfs -u >/dev/null 2>&1
 
     # Add the RAID array to /etc/fstab
-    update_progress "Adding RAID array to /etc/fstab"
+    update_progress "Adding RAID ARRAY to /etc/fstab"
     echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab >/dev/null 2>&1
 
 )
