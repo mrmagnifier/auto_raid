@@ -28,7 +28,7 @@ update_progress() {
     existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
 
     # Check if there are any ARRAY entries in mdadm.conf
-    update_progress ''Check if there are any ARRAY entries in mdadm.conf''
+    update_progress "Check if there are any ARRAY entries in mdadm.conf"
     if grep -q "^ARRAY" /etc/mdadm/mdadm.conf; then
 
     # Remove existing ARRAY entries from mdadm.conf
