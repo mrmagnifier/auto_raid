@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Calculate approximate progress steps
-total_steps=11
+total_steps=15
 current_step=0
 
 # Function to update and display the progress percentage and current task
@@ -26,6 +26,24 @@ update_progress() {
     # Check for existing md devices
     update_progress "Checking for existing md devices"
     existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
+
+    # Check if there are any ARRAY entries in mdadm.conf
+    update_progress ''Check if there are any ARRAY entries in mdadm.conf''
+    if grep -q "^ARRAY" /etc/mdadm/mdadm.conf; then
+
+    # Remove existing ARRAY entries from mdadm.conf
+    update_progress "Removing existing ARRAY entries from mdadm.conf"
+    sudo sed -i '/^ARRAY/d' /etc/mdadm/mdadm.conf
+    fi
+    
+    # Check if there are any entries in /etc/fstab that contain /dev/md0
+    update_progress "Checking for entries in /etc/fstab that contain /dev/md0"
+    if grep -q "/dev/md0" /etc/fstab; then
+
+    # Remove existing entries that contain /dev/md0 from /etc/fstab
+    update_progress "Removing existing entries that contain /dev/md0 from /etc/fstab"
+    sudo sed -i '/\/dev\/md0/d' /etc/fstab
+    fi
 
     # Unmount and stop existing md devices
     if [ -n "$existing_md" ]; then
