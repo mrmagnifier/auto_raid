@@ -83,15 +83,15 @@ update_progress() {
     fi
 
     # Create RAID array
-    update_progress "Creating RAID ARRAY"
+    update_progress "Creating RAID array"
     sudo mdadm --create --verbose /dev/md0 --level="$raid_level" --raid-devices=$disk_count $disks >/dev/null 2>&1
 
     # Format the RAID array
-    update_progress "Formatting the RAID ARRAY"
+    update_progress "Formatting the RAID array"
     sudo mkfs.ext4 -F /dev/md0 >/dev/null 2>&1
 
     # Mount the RAID array
-    update_progress "Mounting the RAID ARRAY"
+    update_progress "Mounting the RAID array"
     sudo mount /dev/md0 /home >/dev/null 2>&1
 
     # Update mdadm.conf
@@ -103,7 +103,7 @@ update_progress() {
     sudo update-initramfs -u >/dev/null 2>&1
 
     # Add the RAID array to /etc/fstab
-    update_progress "Adding RAID ARRAY to /etc/fstab"
+    update_progress "Adding RAID array to /etc/fstab"
     echo '/dev/md0 /home ext4 defaults,nofail,discard 0 0' | sudo tee -a /etc/fstab >/dev/null 2>&1
 
 )
