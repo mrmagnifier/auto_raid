@@ -23,10 +23,6 @@ update_progress() {
     update_progress "Auto-detecting available disks"
     disks=$(lsblk -d -n -o NAME | awk '{ print "/dev/"$1 }' | grep -v "md" | grep -v "sda")
 
-    # Check for existing md devices
-    update_progress "Checking for existing md devices"
-    existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
-
     # Checking if there are any ARRAY entries in mdadm.conf
     update_progress "Checking if there are any ARRAY entries in mdadm.conf"
     if grep -q "^ARRAY" /etc/mdadm/mdadm.conf; then
@@ -44,6 +40,10 @@ update_progress() {
     update_progress "Removing existing entries that contain /dev/md0 from /etc/fstab"
     sudo sed -i '/\/dev\/md0/d' /etc/fstab
     fi
+    
+    # Check for existing md devices
+    update_progress "Checking for existing md devices"
+    existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
 
     # Unmount and stop existing md devices
     if [ -n "$existing_md" ]; then
