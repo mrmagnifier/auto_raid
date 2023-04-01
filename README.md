@@ -14,6 +14,10 @@ The tasks that are run by the script:
 
 - Updating package list and installing mdadm
 - Auto-detecting available disks
+- Checking if there are any ARRAY entries in mdadm.conf
+- Remove existing ARRAY entries from mdadm.conf
+- Checking if there are any entries in /etc/fstab that contain /dev/mdX
+- Remove existing entries that contain /dev/mdX from /etc/fstab
 - Checking for existing md devices
 - Unmounting and stopping existing md devices
 - Wiping detected disks
