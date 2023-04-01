@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Calculate approximate progress steps
-total_steps=11
+total_steps=15
 current_step=0
 
 # Function to update and display the progress percentage and current task
@@ -23,9 +23,27 @@ update_progress() {
     update_progress "Auto-detecting available disks"
     disks=$(lsblk -d -n -o NAME | awk '{ print "/dev/"$1 }' | grep -v "md" | grep -v "sda")
 
+    # Checking if there are any ARRAY entries in mdadm.conf
+    update_progress "Checking if there are any ARRAY entries in mdadm.conf"
+    if grep -q "^ARRAY" /etc/mdadm/mdadm.conf; then
+
+    # Remove existing ARRAY entries from mdadm.conf
+    update_progress "Removing existing ARRAY entries from mdadm.conf"
+    sudo sed -i '/^ARRAY/d' /etc/mdadm/mdadm.conf
+    fi
+    
+    # Check if there are any entries in /etc/fstab that contain /dev/mdX
+    update_progress "Checking for entries in /etc/fstab that contain /dev/mdX"
+    if grep -q "/dev/md" /etc/fstab; then
+
+    # Remove existing entries that contain /dev/mdX from /etc/fstab
+    update_progress "Removing existing entries that contain /dev/mdX from /etc/fstab"
+    sudo sed -i '/\/dev\/md/d' /etc/fstab
+    fi
+    
     # Check for existing md devices
     update_progress "Checking for existing md devices"
-    existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
+    existing_md=$(ls /dev/ | grep -E "^md[0-127]+$")
 
     # Unmount and stop existing md devices
     if [ -n "$existing_md" ]; then
@@ -42,7 +60,7 @@ update_progress() {
         sudo wipefs -af "$disk" >/dev/null 2>&1
     done
 
-    raid_level=6  # Set the desired RAID level
+    raid_level=10  # Set the desired RAID level
     disk_count=$(echo "$disks" | wc -l)
 
     # Check if there are enough disks for the desired RAID level
