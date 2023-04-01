@@ -33,12 +33,12 @@ update_progress() {
     fi
     
     # Check if there are any entries in /etc/fstab that contain /dev/mdX
-    update_progress "Checking for entries in /etc/fstab that contain /dev/md"
-    if grep -q "/dev/md[0-127]" /etc/fstab; then
+    update_progress "Checking for entries in /etc/fstab that contain /dev/mdX"
+    if grep -q "/dev/md" /etc/fstab; then
 
     # Remove existing entries that contain /dev/mdX from /etc/fstab
-    update_progress "Removing existing entries that contain /dev/md from /etc/fstab"
-    sudo sed -i '/\/dev\/md[0-127]/d' /etc/fstab
+    update_progress "Removing existing entries that contain /dev/mdX from /etc/fstab"
+    sudo sed -i '/\/dev\/md/d' /etc/fstab
     fi
     
     # Check for existing md devices
