@@ -34,16 +34,16 @@ update_progress() {
     
     # Check if there are any entries in /etc/fstab that contain /dev/md0
     update_progress "Checking for entries in /etc/fstab that contain /dev/md0"
-    if grep -q "/dev/md0" /etc/fstab; then
+    if grep -q "/dev/md[0-127]" /etc/fstab; then
 
     # Remove existing entries that contain /dev/md0 from /etc/fstab
-    update_progress "Removing existing entries that contain /dev/md0 from /etc/fstab"
-    sudo sed -i '/\/dev\/md0/d' /etc/fstab
+    update_progress "Removing existing entries that contain /dev/md[0-127] from /etc/fstab"
+    sudo sed -i '/\/dev\/md[0-127]/d' /etc/fstab
     fi
     
     # Check for existing md devices
     update_progress "Checking for existing md devices"
-    existing_md=$(ls /dev/ | grep -E "^md[0-9]+$")
+    existing_md=$(ls /dev/ | grep -E "^md[0-127]+$")
 
     # Unmount and stop existing md devices
     if [ -n "$existing_md" ]; then
