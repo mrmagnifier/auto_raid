@@ -6,7 +6,7 @@ Use command:
 
 `wget -O - https://raw.githubusercontent.com/mrmagnifier/auto_raid/main/setup_raid.0 | bash`
 
-If you want to have RAID: `0`, `1`, `5`, `6`, or `10`, change the last number of the link to the RAID number.
+If you want to have RAID: `0`, `1`, `5`, `6`, or `10`, change the last number of the URL to the RAID number.
 
 ____
 
